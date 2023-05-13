@@ -19,32 +19,32 @@ export default function App() {
   const [alt, setAlt] = useState(null);
   const [totalImages, setTotalImages] = useState(0);
   const imageNameRef = useRef();
+
   useEffect(() => {
+    const fetchImages = () => {
+      setIsLoading(true);
+      requestImages(imageName, page)
+        .then(data => {
+          const newHits = data.hits;
+          if (newHits.length === 0) {
+            return;
+          }
+          setHits(prevHits => [...prevHits, ...newHits]);
+          setTotalImages(data.totalHits);
+        })
+        .catch(error => {
+          setError(error);
+          console.error('Error:', error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    };
     if (!imageName) {
       return;
     }
     fetchImages();
   }, [imageName, page]);
-
-  const fetchImages = () => {
-    setIsLoading(true);
-    requestImages(imageName, page)
-      .then(data => {
-        const newHits = data.hits;
-        if (newHits.length === 0) {
-          return;
-        }
-        setHits(prevHits => [...prevHits, ...newHits]);
-        setTotalImages(data.totalHits);
-      })
-      .catch(error => {
-        setError(error);
-        console.error('Error:', error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
 
   const handleFormSubmit = imageName => {
     if (imageName === imageNameRef.current) {
@@ -69,6 +69,7 @@ export default function App() {
 
   return (
     <>
+      {error && <div>{error.message}</div>}
       <ToastContainer />
       <Searchbar onSubmit={handleFormSubmit} />
       <ImageGallery
@@ -86,6 +87,3 @@ export default function App() {
     </>
   );
 }
-// if (query === this.state.query) {
-//   return 'change'
-// }
