@@ -13,7 +13,7 @@ export default function ImageGallery({ hits, toggleModal }) {
             id={hit.id}
             previewImg={hit.webformatURL}
             tags={hit.tags}
-            toggleModal={() => toggleModal(hit.largeImageURL, hit.tags)}
+            toggleModal={() => toggleModal({ largeImageURL: hit.largeImageURL, alt: hit.tags })}
           />
         ))}
       </List>
@@ -25,27 +25,9 @@ ImageGallery.propTypes = {
   hits: PropTypes.arrayOf(
     PropTypes.exact({
       id: PropTypes.number.isRequired,
-      pageURL: PropTypes.string.isRequired,
-      type: PropTypes.string.isRequired,
       tags: PropTypes.string.isRequired,
-      previewURL: PropTypes.string.isRequired,
-      previewWidth: PropTypes.number.isRequired,
-      previewHeight: PropTypes.number.isRequired,
       webformatURL: PropTypes.string.isRequired,
-      webformatWidth: PropTypes.number.isRequired,
-      webformatHeight: PropTypes.number.isRequired,
       largeImageURL: PropTypes.string.isRequired,
-      imageWidth: PropTypes.number.isRequired,
-      imageHeight: PropTypes.number.isRequired,
-      imageSize: PropTypes.number.isRequired,
-      views: PropTypes.number.isRequired,
-      downloads: PropTypes.number.isRequired,
-      collections: PropTypes.number.isRequired,
-      likes: PropTypes.number.isRequired,
-      comments: PropTypes.number.isRequired,
-      user_id: PropTypes.number.isRequired,
-      user: PropTypes.string.isRequired,
-      userImageURL: PropTypes.string.isRequired,
     })
   ).isRequired,
   toggleModal: PropTypes.func.isRequired,

@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery';
 import Button from './Button';
@@ -14,11 +13,8 @@ export default function App() {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [alt, setAlt] = useState(null);
   const [totalImages, setTotalImages] = useState(0);
-  const imageNameRef = useRef();
 
   useEffect(() => {
     const fetchImages = () => {
@@ -29,7 +25,8 @@ export default function App() {
           if (newHits.length === 0) {
             return;
           }
-          setHits(prevHits => [...prevHits, ...newHits]);
+          const images = newHits.map(({ id, tags, webformatURL, largeImageURL }) => ({ id, tags, webformatURL, largeImageURL }))
+          setHits(prevHits => [...prevHits, ...images]);
           setTotalImages(data.totalHits);
         })
         .catch(error => {
@@ -46,25 +43,22 @@ export default function App() {
     fetchImages();
   }, [imageName, page]);
 
-  const handleFormSubmit = imageName => {
-    if (imageName === imageNameRef.current) {
+  const handleFormSubmit = query => {
+    if (imageName === query) {
       alert('change your value');
     }
-    setImageName(imageName);
+    setImageName(query);
     setHits([]);
     setPage(1);
     setTotalImages(0);
-    imageNameRef.current = imageName;
   };
 
   const incrementPage = () => {
     setPage(page + 1);
   };
 
-  const toggleModal = (largeImage, alt) => {
-    setShowModal(!showModal);
-    setSelectedImage(largeImage);
-    setAlt(alt);
+  const toggleModal = (modalData = null) => {
+    setSelectedImage(modalData);
   };
 
   return (
@@ -77,8 +71,8 @@ export default function App() {
         isLoading={isLoading}
         toggleModal={toggleModal}
       />
-      {showModal && (
-        <Modal onClose={toggleModal} largeImage={selectedImage} alt={alt} />
+      {selectedImage && (
+        <Modal onClose={toggleModal} largeImage={selectedImage.largeImageURL} alt={selectedImage.alt} />
       )}
       {isLoading && <Loader />}
       {!isLoading && totalImages !== hits.length && (
